@@ -1,4 +1,5 @@
 import os
+import time
 import cv2
 import json
 import numpy as np
@@ -105,7 +106,10 @@ if __name__ == "__main__":
     image = cv2.imread("./imgs/image.jpeg")
 
     detector = Detector()
+    t = time.process_time()
     output = detector.prediction(image)
+    elapsed_time = time.process_time() - t
+    print(elapsed_time, "secs")
     df = detector.filter_prediction(output, image)
     print(df)
     image = detector.draw_boxes(image, df)
