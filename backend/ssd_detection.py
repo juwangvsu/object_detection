@@ -9,7 +9,10 @@ from backend.utils import timeit, draw_boxed_text
 DETECTION_MODEL = 'ssd_mobilenet/'
 SWAPRB = True
 
-with open(os.path.join('models', DETECTION_MODEL, 'labels.json')) as json_data:
+root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+model_path = os.path.join(root_path,'models')
+
+with open(os.path.join(model_path, DETECTION_MODEL, 'labels.json')) as json_data:
     CLASS_NAMES = json.load(json_data)
 
 
@@ -19,9 +22,10 @@ class Detector():
     @timeit
     def __init__(self):
         self.model = cv2.dnn.readNetFromTensorflow(
-                'models/ssd_mobilenet/frozen_inference_graph.pb',
-                'models/ssd_mobilenet/ssd_mobilenet_v2_coco_2018_03_29.pbtxt')
-        self.colors = np.random.uniform(0, 255, size=(100, 3))
+                os.path.join(model_path,'ssd_mobilenet/frozen_inference_graph.pb'),
+                os.path.join(model_path,'ssd_mobilenet/ssd_mobilenet_v2_coco_2018_03_29.pbtxt'))
+        self.colors = np.random.uniform(0, 255, size=(len(CLASS_NAMES), 3))
+        self.names = CLASS_NAMES
 
     @timeit
     def prediction(self, image):
@@ -44,7 +48,7 @@ class Detector():
                 x2=lambda x: (x['x2'] * width).astype(int),
                 y2=lambda x: (x['y2'] * height).astype(int),
                 class_name=lambda x: (
-                    x['class_id'].astype(int).astype(str).replace(CLASS_NAMES)
+                    x['class_id'].astype(int).astype(str).replace(self.names)
                     ),
                 # TODO: don't work in python 3.5
                 # label=lambda x: (

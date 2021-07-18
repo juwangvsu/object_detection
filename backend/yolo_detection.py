@@ -12,9 +12,10 @@ SCALE = 0.00392  # 1/255
 NMS_THRESHOLD = 0.4  # Non Maximum Supression threshold
 SWAPRB = True
 
-with open(
-        os.path.join('./models', DETECTION_MODEL, 'labels.json')
-        ) as json_data:
+root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+model_path = os.path.join(root_path,'models')
+
+with open(os.path.join(model_path, DETECTION_MODEL, 'labels.json'))as json_data:
     CLASS_NAMES = json.load(json_data)
 
 
@@ -38,11 +39,12 @@ class Detector():
     @timeit
     def __init__(self):
         self.model = cv2.dnn.readNetFromDarknet(
-                # 'models/yolo/yolov3.cfg',
-                # 'models/yolo/yolov3.weights')
-                'models/yolo/yolov3-tiny.cfg',
-                'models/yolo/yolov3-tiny.weights')
+                # os.path.join(model_path,'yolo/yolov3.cfg'),
+                # os.path.join(model_path,'yolo/yolov3.weights'))
+                os.path.join(model_path,'yolo/yolov3-tiny.cfg'),
+                os.path.join(model_path,'yolo/yolov3-tiny.weights'))
         self.colors = np.random.uniform(0, 255, size=(len(CLASS_NAMES), 3))
+        self.names = CLASS_NAMES
 
     def get_output_layers(self, net):
         layer_names = net.getLayerNames()
